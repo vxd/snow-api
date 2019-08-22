@@ -1,0 +1,325 @@
+swagger: "2.0"
+info:
+  description: "Sneg.tv api server"
+  version: "1.0.0"
+  title: ""
+  termsOfService: ""
+  contact:
+    email: "vxd666@gmail.com"
+host: "test.sneg.tv"
+basePath: "/api/v1"
+tags:
+- name: "welcome"
+  description: "Главная страница"
+  externalDocs:
+    description: "Find out more"
+    url: "http://swagger.io"
+- name: "sections"
+  description: "Новости по разделам. Жизнь, Знания, Эмоции"
+- name: "tags"
+  description: "Новости, сгруппипрванные по тегам."
+- name: "subjects"
+  description: "Теги, сгруппипрванные по темам."
+- name: "rubrics"
+  description: "Новости, сгруппипрванные по рубрикам."
+- name: "extra"
+  description: "Данные для меню, курсы валют"
+- name: "articles"
+  description: "Новости, Авторские публикации"  
+schemes:
+- "http"
+paths:
+  /index:
+    get:
+      tags:
+      - "welcome"
+      summary: "Получение данных для главной страницы"
+      description: ""
+      produces:
+      - "application/json"
+      parameters: []
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/WelcomePage"
+
+  /sections/{slug}:
+    get:
+      tags:
+      - "sections"
+      summary: "Найти раздел по slug"
+      description: "Возвращает новости в разделе"  
+      produces:
+      - "application/json"
+      parameters:
+        - in: "path"
+          name: "slug"
+          description: "Slug раздела"
+          required: true
+          type: "string"
+          enum:
+          - "zhizn"
+          - "znaniya"
+          - "emotsii"
+        - in: "query"
+          name: "page"
+          description: "Номер страницы, по-умолчанию первая"
+          type: "integer"
+          format: "int8"     
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/SectionPage"
+        404:
+          description: "Раздел не найдет"
+  /rubrics/{slug}:
+    get:
+      tags:
+      - "rubrics"
+      summary: "Найти рубрику по slug"
+      description: "Возвращает новости в разделе"  
+      produces:
+      - "application/json"
+      parameters:
+        - in: "path"
+          name: "slug"
+          description: "Slug раздела"
+          required: true
+          type: "string"
+        - in: "query"
+          name: "page"
+          description: "Номер страницы, по-умолчанию первая"
+          type: "integer"
+          format: "int8" 
+          default: "1"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/SectionPage"
+        404:
+          description: "Рубрика не найдена"
+  /news/{slug}:
+    get:
+      tags:
+      - "articles"
+      summary: "Найти новость по slug"
+      description: "Возвращает html-код новости"  
+      produces:
+      - "application/json"
+      parameters:
+        - in: "path"
+          name: "slug"
+          description: "id новости"
+          required: true
+          type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/SectionPage"
+        404:
+          description: "Новость не найдена" 
+  /news/index:
+    get:
+      tags:
+      - "articles"
+      summary: "Бездна новостей"
+      description: "Возвращает html-код новости"  
+      produces:
+      - "application/json"
+      parameters:
+        - in: "path"
+          name: "slug"
+          description: "id новости"
+          required: true
+          type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/SectionPage"
+        404:
+          description: "Новость не найдена" 
+  
+  /extra/index:
+    get:
+      tags:
+      - "extra"
+      summary: "Элементы меню, панелей"
+      description: "Возвращает массивы элементов меню"  
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/ExtraPage"
+        404:
+          description: "Новость не найдена"           
+definitions:
+  Banner:
+    type: "object"
+    properties:
+      html:
+        type: "string"
+        description: "html код баннера"
+      js:
+        type: "string"
+        description: "js код баннера"
+  ExtraPage:
+    type: "object"
+    properties:
+      RubricsList:
+        type: array
+        items: 
+          $ref: '#/definitions/SimpleMenuItem'
+      TagsList:
+        type: array
+        items: 
+          $ref: '#/definitions/SimpleMenuItem'            
+      SubjectsList:
+        type: array
+        items: 
+          $ref: '#/definitions/SimpleMenuItem' 
+      Currency:
+        type: array
+        items: 
+          $ref: '#/definitions/CurrencyItem'
+  SectionPage:
+    type: "object"
+    properties:
+      Articles:
+        type: array
+        items: 
+          $ref: '#/definitions/SectionItem'      
+  WelcomePage:
+    type: "object"
+    properties:
+      NewsList:
+        type: array
+        items: 
+          $ref: '#/definitions/SimpleArticleItem'
+        description: "Order Status"  
+      Sections:
+        type: array
+        items: 
+          $ref: '#/definitions/SectionItem'
+  SectionItem:
+    type: "object"
+    properties:
+      header:
+        type: "string"
+        description: "Название направления"
+      url:
+        type: "string"
+        description: "Ссылка на направление"
+      articles:
+        $ref: '#/definitions/PreviewArticle'
+ 
+  SimpleMenuItem:
+    type: "object"
+    properties:
+      header:
+        type: "string"
+        description: "Заголовок" 
+      url:
+        type: "string"
+        description: "Ссылка"
+        
+  SimpleArticleItem:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      header:
+        type: "string"
+        description: "Заголовок"  
+      published_at:
+        type: "string"
+        format: "date-time"
+        description: "Дата публикации"
+      url:
+        type: "string"
+        description: "Ссылка на публикацию"
+  
+  PreviewArticle:
+    type: "object"
+    properties:
+      image_b:
+        type: "string"
+        description: "Картинка для плитки"
+      image_a:
+        type: "string"
+        description: "Картинка для авторской колонки"
+      image_m:
+        type: "string"
+        description: "Картинка для главной новости"       
+      header:
+        type: "string"
+        description: "Заголовок"
+      description:
+        type: "string"
+        description: "Анонс"  
+      url:
+        type: "string"
+        description: "Ссылка на публикацию"
+      published_at:
+        type: "string"
+        format: "date-time"
+        description: "Дата публикации"      
+      Rubrics:
+        type: array
+        items: 
+          $ref: '#/definitions/SimpleMenuItem'
+        description: "Массив рубрик, в основном будет одна"  
+  PreviewAuthorArticle:
+    type: "object"
+    properties:
+      image:
+        type: "string"
+        description: "Картинка для плитки"
+      header:
+        type: "string"
+        description: "Заголовок"
+      url:
+        type: "string"
+        description: "Ссылка на публикацию"
+      Author:
+        $ref: '#/definitions/SimpleAuthorItem'
+  CurrencyItem:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+        enum:
+        - "usd"
+        - "eur"
+        description: "Код валюты" 
+      trend:
+        type: "integer"
+        format: "int4"
+        enum:
+        - "-1"
+        - "0"
+        - "1"
+        description: "Тренд. -1 зеленый, 0 - без изменений, 1 красный" 
+      value:
+        type: "number"
+        format: "float"
+        description: "Цена"
+  SimpleAuthorItem:
+    type: "object"
+    properties:
+      fullname:
+        type: "string"
+        description: "Имя автора полностью" 
+      caption:
+        type: "string"
+        description: "Деятельность, подпись под именем"
+      url:
+        type: "string"
+        description: "Ссылка на страницу автора"      
