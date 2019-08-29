@@ -127,15 +127,25 @@ paths:
       tags:
       - "articles"
       summary: "Бездна новостей"
-      description: "Возвращает html-код новости"  
+      description: "Возвращает массив новостей для бездны"  
       produces:
       - "application/json"
       parameters:
         - in: "path"
-          name: "slug"
-          description: "id новости"
-          required: true
-          type: "string"
+          name: "list"
+          description: "формат для списка новостей. если значение не пустое, то выдает новости в упрощенном формате"
+          schema:
+            type: string
+            enum:
+              - 'true'
+          allowEmptyValue: true
+        - in: "path"
+          name: "page"
+          description: "номер страницы для пагинации, по умолчанию 1я"
+          schema:
+            type: integer
+          allowEmptyValue: true
+          
       responses:
         200:
           description: "successful operation"
