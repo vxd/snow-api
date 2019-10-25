@@ -44,7 +44,7 @@ paths:
           schema:
             $ref: "#/definitions/WelcomePage"
 
-  /sections/{slug}:
+  /{sectionSlug}:
     get:
       tags:
       - "sections"
@@ -54,7 +54,7 @@ paths:
       - "application/json"
       parameters:
         - in: "path"
-          name: "slug"
+          name: "sectionSlug"
           description: "Slug раздела"
           required: true
           type: "string"
@@ -101,7 +101,7 @@ paths:
             $ref: "#/definitions/SectionPage"
         404:
           description: "Рубрика не найдена"
-  /news/{slug}:
+  /{slug}:
     get:
       tags:
       - "articles"
@@ -112,14 +112,14 @@ paths:
       parameters:
         - in: "path"
           name: "slug"
-          description: "id новости"
+          description: "id+slug новости"
           required: true
           type: "string"
       responses:
         200:
           description: "successful operation"
           schema:
-            $ref: "#/definitions/SectionPage"
+            $ref: "#/definitions/ArticlePage"
         404:
           description: "Новость не найдена" 
   /news/index:
@@ -204,7 +204,45 @@ definitions:
       Articles:
         type: array
         items: 
-          $ref: '#/definitions/SectionItem'      
+          $ref: '#/definitions/ArticleItem'
+  ArticlePage:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      short_text:
+        type: "string"
+        description: "Анонс"        
+      header:
+        type: "string"
+        description: "Заголовок"
+      full_text:
+        type: "string"
+        description: "Текст новости"
+      comments_count:
+        type: "integer"
+        format: "int64"      
+        description: "Количество коментов"
+      rubrics_list:
+          type: array
+          items: 
+            $ref: '#/definitions/ItemForList'
+      authors_list:
+          type: array
+          items: 
+            $ref: '#/definitions/ItemForList'      
+      sections_list:
+          type: array
+          items: 
+            $ref: '#/definitions/ItemForList'      
+      published_at:
+        type: "string"
+        format: "date-time"
+        description: "Дата публикации"
+    path:    
+     first_image:        
+
   WelcomePage:
     type: "object"
     properties:
@@ -232,6 +270,9 @@ definitions:
   SimpleMenuItem:
     type: "object"
     properties:
+      id:
+        type: "integer"
+        format: "int64"
       header:
         type: "string"
         description: "Заголовок" 
@@ -259,6 +300,9 @@ definitions:
   PreviewArticle:
     type: "object"
     properties:
+      id:
+        type: "integer"
+        format: "int64"
       image_b:
         type: "string"
         description: "Картинка для плитки"
@@ -332,4 +376,19 @@ definitions:
         description: "Деятельность, подпись под именем"
       url:
         type: "string"
-        description: "Ссылка на страницу автора"      
+        description: "Ссылка на страницу автора"
+  ItemForList:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        description: "id"
+      slug:
+        type: "string"
+        description: "slug" 
+      header:
+        type: "string"
+        description: "Заголовок"
+      url:
+        type: "string"
+        description: "Ссылка на страницу "           
